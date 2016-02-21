@@ -1,0 +1,21 @@
+button{
+	border-radius: 4px; 
+	display: inline-block; 
+	color: lightgray; 
+	font-weight: bold; 
+	padding: 5px; 
+	text-align:center; 
+	border-width: 1px; 
+	border-color: lightgray;
+	border-style: solid;
+	background: white;
+	-webkit-transition: color 1s, border-color 2s, background 1s;
+    transition: color 1s, border-color 2s, background 1s;
+	cursor: pointer;
+}
+
+button:hover{
+	background: #5AA6CA;
+    color: white;
+    border-color: gray;
+}

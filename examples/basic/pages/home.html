@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Home Page Loaded From Node</title>
+		<link rel="stylesheet" type="text/css" href="app.css">
+	</head>
+	
+	<body>
+		<a href="secondPage.html">Seond Page</a>
+		<h1 id="title"></h1>
+		<button id="create">
+			Create Dog
+		</button>
+		<div style="margin-top: 5px;">
+			<input id="name" type="text"/>
+		</div>
+		
+		<div style="
+			border-style: solid;
+			max-width: 400px;
+			display: inline-block;
+			padding: 20px;
+			margin-top: 10px;
+			border-width: 1px;
+			border-radius: 5px;
+			border-color: gray;
+			color: gray;">
+			<label style="color: black;">Dog Names</label>
+	  
+			 <ul
+				id="name-list"
+				style="
+				list-style-type: none;
+				padding: 0px;
+				margin: 0px;
+				margin-top: 5px;">
+			</ul>
+		</div>
+		
+		<!--Request a script to show that the router can handle loading files-->
+		<script type="text/javascript" src="scripts/myapp.js"></script>
+		
+		<!--Some logic to show Ajax working with the router-->
+		<script type="text/javascript">
+		// Create the event functions 
+		function addEvent(target, event, callback){
+			if(target.addEventListener){
+				target.addEventListener(event, callback, false);
+			}
+			else if(target.attachEvent){
+				target.attachEvent('on' + event, callback);
+			}
+		}
+		
+		var dan = new Employee();
+		dan.setName('Dan');
+		var becky = new Employee();
+		becky.setName('Becky')
+		
+		var labelEl = document.getElementById('title');
+		labelEl.innerHTML = "The Pet Shop (Owners: " + dan + " and " + becky + ")";
+		
+		(function (){
+			var props = {
+				name: 'test'
+			};
+			
+			var methods = {
+				setName: function(name){
+					this.name = name;
+				}
+			};
+		})();
+		
+		// Do the ajax post to create a dog
+		var dogNameInput = document.getElementById('name');
+		var createInput = document.getElementById('create');
+
+		// Gets a list of names
+		var requestNames = new XMLHttpRequest();
+		requestNames.onreadystatechange = function(){
+			if(requestNames.readyState === XMLHttpRequest.DONE && requestNames.status === 200){
+				var list = document.getElementById('name-list');
+				
+				var html = [];
+				var names = JSON.parse(requestNames.responseText);
+				for(var i = 0; i < names.length; i++){
+					html[html.length] = '<li>' + names[i] + '</li>';
+				}
+				
+				list.innerHTML = html.join('');
+			}
+		};
+		requestNames.open('GET', 'dogs', true);
+		requestNames.send();
+		
+		addEvent(createInput, 'click', function(){
+			if(dogNameInput.value){
+				var request = new XMLHttpRequest();
+				
+				// Http Method, url, async, user, password
+				request.open('POST', 'dogs/' + dogNameInput.value, true);
+				dogNameInput.value = '';
+				request.onreadystatechange = function(){
+					// The on ready state callback gets called the same number of times nodes res.write is called
+					if(request.readyState !== XMLHttpRequest.DONE){
+						console.log('Not done');
+						return;
+					}
+					
+					if(request.status === 200){
+						// Update the list of dogs once the new dog has been saved
+						requestNames.open('GET', 'dogs', true);
+						requestNames.send();
+					}
+				};
+				
+				request.send();
+			}
+		});
+		</script>
+	</body>
+</html>
